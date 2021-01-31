@@ -9,6 +9,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
 
 db = SQLAlchemy(app)
 ma = Marshmallow(app)
+CORS(app)
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
