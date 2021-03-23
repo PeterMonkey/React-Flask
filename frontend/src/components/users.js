@@ -8,25 +8,51 @@ export const Users = () => {
     const [email, setEmail] = useState('')
     const [password, setPassword] = useState('')
 
+    const [editing, setEditing] =useState(false);
+    const [id, setId] = useState('');
+
     const [users, setUsers] = useState([])
 
     const handleSubmit = async (e) => {
         e.preventDefault();
 
-        const res = await fetch(`${API}/users`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-                name,
-                email,
-                password
+        if(!editing){
+            const res = await fetch(`${API}/users`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    password
+                })
             })
-        })
-        const data = await res.json();
+            const data = await res.json();
+            console.log(data);
+        }else {
+            const res = await fetch(`${API}/users/${id}`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    name,
+                    email,
+                    password
+                })
+            })
+            const data = await res.json();
+            console.log(data)
+            setEditing(false);
+            setId('');
+        }
+
         await getUsers();
-        console.log(data)
+
+        setName('');
+        setEmail('');
+        setPassword('');
     }
 
     const getUsers = async () => {
@@ -52,8 +78,16 @@ export const Users = () => {
         }
     }
 
-    const editUser = (id) => {
-        console.log(id)
+    const editUser = async (id) => {
+        const res = await fetch(`${API}/users/${id}`)
+        const data = await res.json();
+
+        setEditing(true);
+        setId(id)
+        
+        setName(data.name)
+        setEmail(data.email)
+        setPassword(data.password)
     }
 
     return (
@@ -94,7 +128,9 @@ export const Users = () => {
                     </div>
 
                     <button className="btn btn-primary btn-block">
-                    Create
+                    {
+                        editing ? 'Update' : 'Create'
+                    }
                     </button>
                 </form>
             </div>
